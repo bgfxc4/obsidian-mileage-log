@@ -2,11 +2,23 @@ import { App, Plugin, PluginSettingTab, Setting } from 'obsidian'
 import * as fileHelper from "./fileHelper"
 import { DateTime } from "luxon"
 import { draw_calendar } from './calendar'
+import { parse_source } from './source_helper'
 
 // Remember to rename these classes and interfaces!
 
 interface MileageLogSettings {
 	filePath: string
+}
+
+export type Transportation = {
+	name: string,
+	vehicle: string,
+	destination: string
+}
+
+export type Entry = {
+	date: DateTime,
+	transportations: Transportation[],
 }
 
 const DEFAULT_SETTINGS: MileageLogSettings = {
@@ -17,6 +29,7 @@ export default class MileageLogPlugin extends Plugin {
 	settings: MileageLogSettings
 
 	selected_date = DateTime.now()
+	entries: Entry[] = []
 
 	async onload() {
 		await this.loadSettings()
@@ -34,6 +47,8 @@ export default class MileageLogPlugin extends Plugin {
 		this.addSettingTab(new SampleSettingTab(this.app, this))
 
 		this.registerMarkdownCodeBlockProcessor("mileage-log", (source, el, _ctx) => {
+			this.entries = parse_source(source)
+			console.error(this.entries)
 			draw_calendar(this, source, el)
 		});
 	}
