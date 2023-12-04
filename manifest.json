@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "obsidian-mileage-log",
+	"name": "Obsidian Mileage Log",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
+	"description": "A calendar plugin where you can keep track of the type of transportation you used to get to work and back.",
+	"author": "bgfxc4",
+	"authorUrl": "https://bgfxc4.de",
 	"fundingUrl": "https://obsidian.md/pricing",
 	"isDesktopOnly": false
 }
