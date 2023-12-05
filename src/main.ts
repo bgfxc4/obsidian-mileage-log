@@ -48,8 +48,7 @@ export default class MileageLogPlugin extends Plugin {
 
 		this.registerMarkdownCodeBlockProcessor("mileage-log", (source, el, _ctx) => {
 			this.entries = parse_source(source)
-			console.error(this.entries)
-			draw_calendar(this, source, el)
+			draw_calendar(this, el)
 		});
 	}
 

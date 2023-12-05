@@ -62,3 +62,20 @@
     top: 50%;
     translate: -50% -50%;
 }
+
+.mlog-day-entry-container {
+	position: absolute;
+	top: 97%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	justify-content: center;
+}
+
+.mlog-day-entry-marker {
+	border-radius: 100%;
+	width: 6px;
+	height: 6px;
+	background-color: var(--text-success);
+	margin: 1px;
+}

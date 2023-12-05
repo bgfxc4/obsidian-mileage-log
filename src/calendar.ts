@@ -1,8 +1,7 @@
 import { DateTime, Info } from "luxon"
 import MileageLogPlugin from "./main"
 
-export function draw_calendar(plugin: MileageLogPlugin, source: string, el: HTMLElement) {
-	const rows = source.split("\n").filter((row) => row.length > 0)
+export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement) {
 
 	const cal = el.createDiv({ cls: "mlog-calendar" })
 	const top_bar = cal.createDiv({ cls: "mlog-top-bar" })
@@ -17,44 +16,67 @@ export function draw_calendar(plugin: MileageLogPlugin, source: string, el: HTML
 		weekday_label_container.createSpan({ text: weekday_abbrevs[i], cls: "mlog-weekday-label" })
 	}
 	const day_container = cal.createDiv({ cls: "mlog-day-container" })
-	draw_days(plugin.selected_date, day_container)
-
-	for (let i = 0; i < rows.length; i++) {
-		const cols = rows[i].split(" ");
-		for (let j = 0; j < cols.length; j++) {
-			continue
-		}
-	}
+	draw_days(plugin, day_container)
 
 	month_btn_left.addEventListener("click", () => {
 		plugin.selected_date = plugin.selected_date.minus({ months: 1 })
-		draw_days(plugin.selected_date, day_container)
+		draw_days(plugin, day_container)
 		set_month_text(plugin.selected_date, month_label)
 	})
 
 	month_btn_right.addEventListener("click", () => {
 		plugin.selected_date = plugin.selected_date.plus({ months: 1 })
-		draw_days(plugin.selected_date, day_container)
+		draw_days(plugin, day_container)
 		set_month_text(plugin.selected_date, month_label)
 	})
 }
 
-function draw_days(selected_date: DateTime, day_container: HTMLElement) {
+function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
+	const weekday_offset = plugin.selected_date.startOf("month").weekday - 1
+	const days_in_month = plugin.selected_date.daysInMonth || 0;
+	const days_in_last_month = plugin.selected_date.minus({month: 1}).daysInMonth || 0;
+
+	const entries_in_month = plugin.entries.filter(el => el.date.month == plugin.selected_date.month && el.date.year == plugin.selected_date.year)
+	const entries_last_month = plugin.entries.filter(el => el.date.month == plugin.selected_date.minus({month: 1}).month && el.date.year == plugin.selected_date.minus({month: 1}).year)
+	const entries_next_month = plugin.entries.filter(el => el.date.month == plugin.selected_date.plus({month: 1}).month && el.date.year == plugin.selected_date.plus({month: 1}).year)
+
 	day_container.innerHTML = ""
-	const weekday_offset = selected_date.startOf("month").weekday - 1
-	const days_in_month = selected_date.daysInMonth || 0;
-	const days_in_last_month = selected_date.minus({month: 1}).daysInMonth || 0;
+
 	for (let i = -weekday_offset; i < 42 - weekday_offset; i++) {
 		const day = day_container.createSpan({ cls: "mlog-day" })
 		const label = day.createDiv({ cls: "mlog-day-label" })
 		if (i >= 0 && i < days_in_month) {
 			label.setText((i+1).toString())
+
+			const entry = entries_in_month.find(el => el.date.day == i+1)
+			if (entry) {
+				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
+				for (const _ of entry.transportations) {
+					marker_container.createDiv({ cls: "mlog-day-entry-marker" })
+				}
+			}	
 		} else if (i >= days_in_month) {
 			label.setText((i - days_in_month+1).toString())
 			day.addClass("mlog-inactive-day")
+
+			const entry = entries_next_month.find(el => el.date.day == (i - days_in_month+1))
+			if (entry) {
+				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
+				for (const _ of entry.transportations) {
+					marker_container.createDiv({ cls: "mlog-day-entry-marker" })
+				}
+			}
 		} else {
 			label.setText((days_in_last_month + i + 1).toString())
 			day.addClass("mlog-inactive-day")
+
+			const entry = entries_last_month.find(el => el.date.day == (days_in_last_month + i + 1))
+			if (entry) {
+				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
+				for (const _ of entry.transportations) {
+					marker_container.createDiv({ cls: "mlog-day-entry-marker" })
+				}
+			}
 		}
 	}
 }
