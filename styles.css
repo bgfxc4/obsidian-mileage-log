@@ -41,6 +41,7 @@
 	color: var(--text-normal);
     margin-left: 10px;
     margin-right: 10px;
+	cursor: pointer;
 }
 
 .mlog-day {
@@ -48,6 +49,7 @@
     border-radius: 100%;
     aspect-ratio: 1 / 1;
     position: relative;
+	cursor: pointer;
 }
 
 .mlog-inactive-day {
@@ -78,4 +80,13 @@
 	height: 6px;
 	background-color: var(--text-success);
 	margin: 1px;
+}
+
+.mlog-day-modal-add-entry-button {
+	background-color: var(--text-success);
+	position: absolute;
+	top: 10%;
+	right: 10%;
+	border-radius: 100%;
+    aspect-ratio: 1 / 1;
 }

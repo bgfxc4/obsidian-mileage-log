@@ -1,18 +1,21 @@
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian'
+import { App, DropdownComponent, Plugin, PluginSettingTab, Setting, TextComponent } from 'obsidian'
 import * as fileHelper from "./fileHelper"
 import { DateTime } from "luxon"
 import { draw_calendar } from './calendar'
-import { parse_source } from './source_helper'
+import { parse_source } from './sourceHelper'
 
 // Remember to rename these classes and interfaces!
 
 interface MileageLogSettings {
-	filePath: string
+	filePath: string,
+	placeOptions: string[],
+	transpOptions: string[],
 }
 
 export type Transportation = {
 	name: string,
 	vehicle: string,
+	start: string,
 	destination: string
 }
 
@@ -22,7 +25,9 @@ export type Entry = {
 }
 
 const DEFAULT_SETTINGS: MileageLogSettings = {
-	filePath: '/MileageLog'
+	filePath: '/MileageLog',
+	placeOptions: [],
+	transpOptions: [],
 }
 
 export default class MileageLogPlugin extends Plugin {
@@ -88,5 +93,80 @@ class SampleSettingTab extends PluginSettingTab {
 					this.plugin.settings.filePath = value
 					await this.plugin.saveSettings()
 				}))
+
+
+		let deleteTranspDropdown: DropdownComponent
+		const transpSetting = new Setting(containerEl)
+		new Setting(containerEl)
+			.setName("Delete transportations")
+			.setDesc("Select a transportation from the dropdown to delete")
+			.addDropdown(drop => {
+					deleteTranspDropdown = drop
+					this.plugin.settings.transpOptions.forEach(el => drop.addOption(el, el))
+				})
+			.addButton(btn => { btn
+				.setButtonText("Delete selected transportation")
+				.onClick(async () => {
+					this.plugin.settings.transpOptions.splice(this.plugin.settings.transpOptions.findIndex(el => el == deleteTranspDropdown.getValue()), 1)
+					transpSetting.setDesc(`The transportation types your are using. Current transportations: ${this.plugin.settings.transpOptions.join(', ')}`)
+					await this.plugin.saveSettings()
+				})
+			})
+
+		let transpField: TextComponent
+		transpSetting
+			.setName("Transportations")
+			.setDesc(`The transportation types your are using. Current transportations: ${this.plugin.settings.transpOptions.join(', ')}`)
+			.addText(text => { text
+				.setPlaceholder("Enter a name for a new transportation")
+				transpField = text
+			})
+			.addButton(btn => { btn
+				.setButtonText("Add to list")
+				.onClick(async () => {
+					this.plugin.settings.transpOptions.push(transpField.getValue())
+					deleteTranspDropdown.addOption(transpField.getValue(), transpField.getValue())
+					transpField.setValue("")
+					transpSetting.setDesc(`The transportation types your are using. Current transportations: ${this.plugin.settings.transpOptions.join(', ')}`)
+					await this.plugin.saveSettings()
+				})
+			})
+
+		let deletePlaceDropdown: DropdownComponent
+		const placeSetting = new Setting(containerEl)
+		new Setting(containerEl)
+			.setName("Delete places")
+			.setDesc("Select a place from the dropdown to delete")
+			.addDropdown(drop => {
+					deletePlaceDropdown = drop
+					this.plugin.settings.placeOptions.forEach(el => drop.addOption(el, el))
+				})
+			.addButton(btn => { btn
+				.setButtonText("Delete selected place")
+				.onClick(async () => {
+					this.plugin.settings.placeOptions.splice(this.plugin.settings.placeOptions.findIndex(el => el == deletePlaceDropdown.getValue()), 1)
+					placeSetting.setDesc(`The places your are traveling to. Current places: ${this.plugin.settings.placeOptions.join(', ')}`)
+					await this.plugin.saveSettings()
+				})
+			})
+
+		let placeField: TextComponent
+		placeSetting
+			.setName("Places")
+			.setDesc(`The places your are traveling to. Current places: ${this.plugin.settings.placeOptions.join(', ')}`)
+			.addText(text => { text
+				.setPlaceholder("Enter a name for a new place")
+				placeField = text
+			})
+			.addButton(btn => { btn
+				.setButtonText("Add to list")
+				.onClick(async () => {
+					this.plugin.settings.placeOptions.push(placeField.getValue())
+					deletePlaceDropdown.addOption(placeField.getValue(), placeField.getValue())
+					placeField.setValue("")
+					placeSetting.setDesc(`The places your are traveling to. Current places: ${this.plugin.settings.placeOptions.join(', ')}`)
+					await this.plugin.saveSettings()
+				})
+			})
 	}
 }

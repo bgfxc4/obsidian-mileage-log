@@ -19,13 +19,14 @@ export function parse_source(source: string): Entry[] {
 
 		for (let i = 1; i < splitted.length; i++) {
 			const transport = splitted[i].split(":")
-			if (transport.length != 3) {
+			if (transport.length != 4) {
 				throw new Error(`Cant parse element number ${d}: at transport number ${i}: wrong number of arguments.`)
 			}
 			entry.transportations.push({
 				name: transport[0],
 				vehicle: transport[1],
-				destination: transport[2]
+				start: transport[2],
+				destination: transport[3]
 			})
 		}
 		ret.push(entry)

@@ -1,5 +1,6 @@
 import { DateTime, Info } from "luxon"
-import MileageLogPlugin from "./main"
+import { DayModal } from "./dayModal"
+import MileageLogPlugin, { Entry } from "./main"
 
 export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement) {
 
@@ -45,10 +46,16 @@ function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
 	for (let i = -weekday_offset; i < 42 - weekday_offset; i++) {
 		const day = day_container.createSpan({ cls: "mlog-day" })
 		const label = day.createDiv({ cls: "mlog-day-label" })
+
+		let entry: Entry | undefined
+		let real_day = 0
+		let month_modifier = 0
+
 		if (i >= 0 && i < days_in_month) {
 			label.setText((i+1).toString())
+			real_day = i+1
 
-			const entry = entries_in_month.find(el => el.date.day == i+1)
+			entry = entries_in_month.find(el => el.date.day == i+1)
 			if (entry) {
 				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
 				for (const _ of entry.transportations) {
@@ -58,8 +65,10 @@ function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
 		} else if (i >= days_in_month) {
 			label.setText((i - days_in_month+1).toString())
 			day.addClass("mlog-inactive-day")
+			real_day = i - days_in_month + 1
+			month_modifier = +1
 
-			const entry = entries_next_month.find(el => el.date.day == (i - days_in_month+1))
+			entry = entries_next_month.find(el => el.date.day == (i - days_in_month+1))
 			if (entry) {
 				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
 				for (const _ of entry.transportations) {
@@ -69,8 +78,10 @@ function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
 		} else {
 			label.setText((days_in_last_month + i + 1).toString())
 			day.addClass("mlog-inactive-day")
+			real_day = i + days_in_month + 1
+			month_modifier = -1
 
-			const entry = entries_last_month.find(el => el.date.day == (days_in_last_month + i + 1))
+			entry = entries_last_month.find(el => el.date.day == (days_in_last_month + i + 1))
 			if (entry) {
 				const marker_container = day.createDiv({ cls: "mlog-day-entry-container" })
 				for (const _ of entry.transportations) {
@@ -78,6 +89,10 @@ function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
 				}
 			}
 		}
+
+		day.addEventListener("click", () => {
+			new DayModal(this.app, entry || { date: plugin.selected_date.set({ day: real_day }).plus({ month: month_modifier }), transportations: [] }).open()
+		})
 	}
 }
 
