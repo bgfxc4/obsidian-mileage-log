@@ -51,9 +51,9 @@ export default class MileageLogPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this))
 
-		this.registerMarkdownCodeBlockProcessor("mileage-log", (source, el, _ctx) => {
+		this.registerMarkdownCodeBlockProcessor("mileage-log", (source, el, ctx) => {
 			this.entries = parse_source(source)
-			draw_calendar(this, el)
+			draw_calendar(this, el, ctx)
 		});
 	}
 

@@ -7,7 +7,6 @@ export function parse_source(source: string): Entry[] {
 	for (const d in days) {
 		const splitted = days[d].split(";")
 		const date = DateTime.fromISO(splitted[0])
-		console.log(splitted[0], date)
 		if (date.invalidReason) {
 			throw new Error(`Cant parse element number ${d}: Wrong date format.`)
 		}
@@ -32,4 +31,12 @@ export function parse_source(source: string): Entry[] {
 		ret.push(entry)
 	}
 	return ret
+}
+
+export function dump_to_source(entries: Entry[]): string {
+	return entries.map(e =>
+		`${e.date.toISODate()};${e.transportations.map(el =>
+			`${el.name}:${el.vehicle}:${el.start}:${el.destination}`
+		).join(';')}`
+	).join("\n")
 }

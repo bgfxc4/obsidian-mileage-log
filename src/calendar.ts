@@ -1,8 +1,9 @@
 import { DateTime, Info } from "luxon"
+import { MarkdownPostProcessorContext } from "obsidian"
 import { DayModal } from "./dayModal"
 import MileageLogPlugin, { Entry } from "./main"
 
-export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement) {
+export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement, mkdwn_ctx: MarkdownPostProcessorContext) {
 
 	const cal = el.createDiv({ cls: "mlog-calendar" })
 	const top_bar = cal.createDiv({ cls: "mlog-top-bar" })
@@ -17,22 +18,22 @@ export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement) {
 		weekday_label_container.createSpan({ text: weekday_abbrevs[i], cls: "mlog-weekday-label" })
 	}
 	const day_container = cal.createDiv({ cls: "mlog-day-container" })
-	draw_days(plugin, day_container)
+	draw_days(plugin, day_container, mkdwn_ctx, el)
 
 	month_btn_left.addEventListener("click", () => {
 		plugin.selected_date = plugin.selected_date.minus({ months: 1 })
-		draw_days(plugin, day_container)
+		draw_days(plugin, day_container, mkdwn_ctx, el)
 		set_month_text(plugin.selected_date, month_label)
 	})
 
 	month_btn_right.addEventListener("click", () => {
 		plugin.selected_date = plugin.selected_date.plus({ months: 1 })
-		draw_days(plugin, day_container)
+		draw_days(plugin, day_container, mkdwn_ctx, el)
 		set_month_text(plugin.selected_date, month_label)
 	})
 }
 
-function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
+function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement, mkdwn_ctx: MarkdownPostProcessorContext, calendar_el: HTMLElement) {
 	const weekday_offset = plugin.selected_date.startOf("month").weekday - 1
 	const days_in_month = plugin.selected_date.daysInMonth || 0;
 	const days_in_last_month = plugin.selected_date.minus({month: 1}).daysInMonth || 0;
@@ -91,7 +92,7 @@ function draw_days(plugin: MileageLogPlugin, day_container: HTMLElement) {
 		}
 
 		day.addEventListener("click", () => {
-			new DayModal(this.app, entry || { date: plugin.selected_date.set({ day: real_day }).plus({ month: month_modifier }), transportations: [] }).open()
+			new DayModal(plugin, entry || { date: plugin.selected_date.set({ day: real_day }).plus({ month: month_modifier }), transportations: [] }, mkdwn_ctx, calendar_el).open()
 		})
 	}
 }
