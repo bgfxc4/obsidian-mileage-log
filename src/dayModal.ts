@@ -9,13 +9,15 @@ export class DayModal extends Modal {
 	ul: HTMLElement
 	app: App
 	plugin: MileageLogPlugin
+	entries: Entry[]
 	calendar_el: HTMLElement
 	mkdwn_ctx: MarkdownPostProcessorContext
 
-	constructor(plugin: MileageLogPlugin, dayEntry: Entry, mkdwn_ctx: MarkdownPostProcessorContext, calendar_el: HTMLElement) {
+	constructor(plugin: MileageLogPlugin, entries: Entry[], dayEntry: Entry, mkdwn_ctx: MarkdownPostProcessorContext, calendar_el: HTMLElement) {
 		super(plugin.app);
 		this.dayEntry = dayEntry
 		this.plugin = plugin
+		this.entries = entries
 		this.calendar_el = calendar_el
 		this.mkdwn_ctx = mkdwn_ctx
 
@@ -26,7 +28,7 @@ export class DayModal extends Modal {
 	onOpen() {
 		const createBtn = this.contentEl.createDiv({ text: "+", cls: "mlog-day-modal-add-entry-button" })
 		createBtn.addEventListener("click", () => {
-				new CreateEntryModal(this.plugin, this.dayEntry.date, this.mkdwn_ctx, this.calendar_el).open();
+				new CreateEntryModal(this.plugin, this.entries, this.dayEntry.date, this.mkdwn_ctx, this.calendar_el).open();
 		})
 		setIcon(createBtn, "plus-circle")
 
@@ -58,6 +60,7 @@ class CreateEntryModal extends Modal {
 	day: DateTime
 	ul: HTMLElement
 	plugin: MileageLogPlugin
+	entries: Entry[]
 	mkdwn_ctx: MarkdownPostProcessorContext
 	calendar_el: HTMLElement
 	
@@ -69,10 +72,11 @@ class CreateEntryModal extends Modal {
 		reverse: false,
 	}
 
-	constructor(plugin: MileageLogPlugin, day: DateTime, mkdwn_ctx: MarkdownPostProcessorContext, calendar_el: HTMLElement) {
+	constructor(plugin: MileageLogPlugin, entries: Entry[], day: DateTime, mkdwn_ctx: MarkdownPostProcessorContext, calendar_el: HTMLElement) {
 		super(plugin.app);
 		this.day = day
 		this.plugin = plugin
+		this.entries = entries
 		this.mkdwn_ctx = mkdwn_ctx
 		this.calendar_el = calendar_el
 	}
@@ -159,15 +163,15 @@ class CreateEntryModal extends Modal {
 			})
 		}
 
-		const idx = this.plugin.entries.findIndex(el => el.date == this.day)
+		const idx = this.entries.findIndex(el => el.date == this.day)
 
 		if (idx == -1) {
-			this.plugin.entries.push({
+			this.entries.push({
 				date: this.day,
 				transportations: transps
 			})
 		} else {
-			this.plugin.entries[idx].transportations.push(...transps)
+			this.entries[idx].transportations.push(...transps)
 		}
 
 		const editor = this.plugin.app.workspace.getActiveViewOfType(MarkdownView)?.editor
@@ -180,7 +184,7 @@ class CreateEntryModal extends Modal {
 		const block_start = {line: info.lineStart + 1, ch: 0}
 		const block_end = {line: info.lineEnd - 1, ch: currentContent.split("\n")[info.lineEnd-1].length}
 
-		editor.replaceRange(dump_to_source(this.plugin.entries), block_start, block_end)
+		editor.replaceRange(dump_to_source(this.entries), block_start, block_end)
 		this.close()
 	}
 }

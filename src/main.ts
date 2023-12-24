@@ -34,7 +34,6 @@ export default class MileageLogPlugin extends Plugin {
 	settings: MileageLogSettings
 
 	selected_date = DateTime.now()
-	entries: Entry[] = []
 
 	async onload() {
 		await this.loadSettings()
@@ -52,8 +51,8 @@ export default class MileageLogPlugin extends Plugin {
 		this.addSettingTab(new SampleSettingTab(this.app, this))
 
 		this.registerMarkdownCodeBlockProcessor("mileage-log", (source, el, ctx) => {
-			this.entries = parse_source(source)
-			draw_calendar(this, el, ctx)
+			const entries = parse_source(source)
+			draw_calendar(this, entries, el, ctx)
 		});
 	}
 
