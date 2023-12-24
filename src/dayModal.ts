@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { App, MarkdownPostProcessorContext, MarkdownView, Modal, Setting } from "obsidian";
+import { App, MarkdownPostProcessorContext, MarkdownView, Modal, setIcon, Setting } from "obsidian";
 import { Entry, Transportation } from "./main";
 import MileageLogPlugin from "./main";
 import { dump_to_source } from "./sourceHelper";
@@ -24,10 +24,11 @@ export class DayModal extends Modal {
 	}
 
 	onOpen() {
-		this.contentEl.createDiv({ text: "+", cls: "mlog-day-modal-add-entry-button" })
-			.addEventListener("click", () => {
+		const createBtn = this.contentEl.createDiv({ text: "+", cls: "mlog-day-modal-add-entry-button" })
+		createBtn.addEventListener("click", () => {
 				new CreateEntryModal(this.plugin, this.dayEntry.date, this.mkdwn_ctx, this.calendar_el).open();
-			})
+		})
+		setIcon(createBtn, "plus-circle")
 
 		if (!this.dayEntry) {
 			this.ul.setText("No entry yet.")
@@ -151,7 +152,7 @@ class CreateEntryModal extends Modal {
 
 		if (settings.reverse) {
 			transps.push({
-				name: settings.name,
+				name: settings.name + " - reverse",
 				vehicle: settings.vehicle,
 				destination: settings.from,
 				start: settings.to,	

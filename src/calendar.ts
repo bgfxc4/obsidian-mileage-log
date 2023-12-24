@@ -7,10 +7,10 @@ export function draw_calendar(plugin: MileageLogPlugin, el: HTMLElement, mkdwn_c
 
 	const cal = el.createDiv({ cls: "mlog-calendar" })
 	const top_bar = cal.createDiv({ cls: "mlog-top-bar" })
-	const month_btn_left = top_bar.createSpan({ text: "<", cls: "mlog-month-button" })
+	const month_btn_left = top_bar.createSpan({ text: " < ", cls: "mlog-month-button" })
 	const month_label = top_bar.createDiv({ cls: "mlog-month-name" })
 	set_month_text(plugin.selected_date, month_label)
-	const month_btn_right = top_bar.createSpan({ text: ">", cls: "mlog-month-button" })
+	const month_btn_right = top_bar.createSpan({ text: " > ", cls: "mlog-month-button" })
 
 	const weekday_label_container = cal.createDiv({ cls: "mlog-weekday-label-container" })
 	const weekday_abbrevs = Info.weekdays("short") 

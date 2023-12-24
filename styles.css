@@ -83,10 +83,7 @@
 }
 
 .mlog-day-modal-add-entry-button {
-	background-color: var(--text-success);
 	position: absolute;
 	top: 10%;
 	right: 10%;
-	border-radius: 100%;
-    aspect-ratio: 1 / 1;
 }
