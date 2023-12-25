@@ -1,5 +1,5 @@
 import { DateTime, Info } from "luxon"
-import { MarkdownPostProcessorContext } from "obsidian"
+import { MarkdownPostProcessorContext, setIcon } from "obsidian"
 import { DayModal } from "./dayModal"
 import MileageLogPlugin, { Entry } from "./main"
 
@@ -7,10 +7,12 @@ export function draw_calendar(plugin: MileageLogPlugin, entries: Entry[], el: HT
 
 	const cal = el.createDiv({ cls: "mlog-calendar" })
 	const top_bar = cal.createDiv({ cls: "mlog-top-bar" })
-	const month_btn_left = top_bar.createSpan({ text: " < ", cls: "mlog-month-button" })
+	const month_btn_left = top_bar.createSpan({ text: "", cls: "mlog-month-button" })
+	setIcon(month_btn_left, "arrow-left-circle")
 	const month_label = top_bar.createDiv({ cls: "mlog-month-name" })
 	set_month_text(plugin.selected_date, month_label)
-	const month_btn_right = top_bar.createSpan({ text: " > ", cls: "mlog-month-button" })
+	const month_btn_right = top_bar.createSpan({ text: "", cls: "mlog-month-button" })
+	setIcon(month_btn_right, "arrow-right-circle")
 
 	const weekday_label_container = cal.createDiv({ cls: "mlog-weekday-label-container" })
 	const weekday_abbrevs = Info.weekdays("short") 
@@ -47,6 +49,10 @@ function draw_days(plugin: MileageLogPlugin, entries: Entry[], day_container: HT
 	for (let i = -weekday_offset; i < 42 - weekday_offset; i++) {
 		const day = day_container.createSpan({ cls: "mlog-day" })
 		const label = day.createDiv({ cls: "mlog-day-label" })
+
+		if ((i+weekday_offset) % 7 == 5 || (i+weekday_offset) % 7 == 6) {
+			day.addClass("mlog-weekend-day")
+		}
 
 		let entry: Entry | undefined
 		let real_day = 0

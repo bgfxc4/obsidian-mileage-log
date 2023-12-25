@@ -41,7 +41,9 @@
 	color: var(--text-normal);
     margin-left: 10px;
     margin-right: 10px;
+	margin-top: 5px;
 	cursor: pointer;
+	--icon-size: var(--icon-size-m);
 }
 
 .mlog-day {
@@ -52,9 +54,16 @@
 	cursor: pointer;
 }
 
-.mlog-inactive-day {
-	color: var(--text-muted) !important;
+.mlog-day.mlog-inactive-day {
     background-color: var(--background-primary-alt) !important;
+}
+
+.mlog-day.mlog-weekend-day {
+	background-color: var(--interactive-hover)
+}
+
+.mlog-day.mlog-weekend-day .mlog-day-label {
+	color: var(--text-muted);
 }
 
 .mlog-day-label {

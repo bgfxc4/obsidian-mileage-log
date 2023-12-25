@@ -3,6 +3,11 @@ import { Entry } from "./main";
 
 export function parse_source(source: string): Entry[] {
 	const days = source.split("\n");
+
+	if (source == "") {
+		return []
+	}
+
 	const ret: Entry[] = []
 	for (const d in days) {
 		const splitted = days[d].split(";")
