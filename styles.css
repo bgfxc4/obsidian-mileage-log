@@ -96,3 +96,7 @@
 	top: 10%;
 	right: 10%;
 }
+
+.mlog-error-text {
+	color: var(--text-error);
+}

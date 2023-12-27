@@ -126,6 +126,10 @@ class CreateEntryModal extends Modal {
 				toggle.onChange(val => this.settings.reverse = val)
 			})
 
+	
+		const errorText = contentEl.createEl("p", { text: "some error text", cls: "mlog-error-text" })
+		errorText.hide()
+
 		new Setting(contentEl)
 			.addButton(btn =>
 				btn.setButtonText("Cancel")
@@ -135,7 +139,12 @@ class CreateEntryModal extends Modal {
 			.addButton(btn =>
 				btn.setButtonText("Create entry")
 				.onClick(() => {
-					this.insertEntry(this.settings)
+					try {
+						this.insertEntry(this.settings)
+					} catch (e) {
+						errorText.setText(e)
+						errorText.show()
+					}
 				}))
 	}
 
@@ -145,6 +154,10 @@ class CreateEntryModal extends Modal {
 	}
 
 	insertEntry(settings: EntrySettings) {
+		if (settings.name.trim() == "") {
+			throw new Error("The name cannot be empty!")
+		}
+
 		const transps: Transportation[] = [
 			{
 				name: settings.name,
@@ -171,6 +184,10 @@ class CreateEntryModal extends Modal {
 				transportations: transps
 			})
 		} else {
+			if (this.entries[idx].transportations.filter(el => transps.filter(e => e.name == el.name).length != 0).length != 0) {
+				throw new Error("A transportation with this name already exists for this day!")
+			}
+
 			this.entries[idx].transportations.push(...transps)
 		}
 
