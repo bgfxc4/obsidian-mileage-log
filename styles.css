@@ -100,3 +100,12 @@
 .mlog-error-text {
 	color: var(--text-error);
 }
+
+.mlog-remove-entry-button {
+	color: var(--text-error);
+	margin-left: 10px;
+}
+
+.mlog-entry-text {
+	display: inline;
+}
